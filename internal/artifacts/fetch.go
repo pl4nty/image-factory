@@ -140,7 +140,7 @@ func (m *Manager) fetchImageByDigest(digestRef name.Digest, architecture Arch, i
 func (m *Manager) fetchImager(tag string) error {
 	destinationPath := filepath.Join(m.storagePath, tag)
 
-	if err := m.fetchImageByTag(ImagerImage, tag, ArchAmd64, imageExportHandler(func(logger *zap.Logger, r io.Reader) error {
+	if err := m.fetchImageByTag(ImagerImage, tag, ArchArm64, imageExportHandler(func(logger *zap.Logger, r io.Reader) error {
 		return untar(logger, r, destinationPath+tmpSuffix)
 	})); err != nil {
 		return err

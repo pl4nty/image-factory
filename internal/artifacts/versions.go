@@ -30,7 +30,7 @@ func (m *Manager) fetchTalosVersions() (any, error) {
 
 	repository := m.imageRegistry.Repo(ImagerImage)
 
-	candidates, err := m.pullers[ArchAmd64].List(ctx, repository)
+	candidates, err := m.pullers[ArchArm64].List(ctx, repository)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list Talos versions: %w", err)
 	}
@@ -120,7 +120,7 @@ type overlaysDescription struct {
 func (m *Manager) fetchOfficialExtensions(tag string) error {
 	var extensions []ExtensionRef
 
-	if err := m.fetchImageByTag(ExtensionManifestImage, tag, ArchAmd64, imageExportHandler(func(_ *zap.Logger, r io.Reader) error {
+	if err := m.fetchImageByTag(ExtensionManifestImage, tag, ArchArm64, imageExportHandler(func(logger *zap.Logger, r io.Reader) error {
 		var extractErr error
 
 		extensions, extractErr = extractExtensionList(r)
