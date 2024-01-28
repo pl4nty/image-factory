@@ -3,12 +3,7 @@
 # Generated on 2023-11-30T12:42:01Z by kres latest.
 
 name: slack-notify
-"on":
-  workflow_run:
-    workflows:
-      - default
-    types:
-      - completed
+"on": workflow_dispatch
 jobs:
   slack-notify:
     runs-on:
