@@ -26,6 +26,12 @@
         {{ end }}
     </dl>
     <h2>Disk Images</h2>
+    <h3>SBCs</h3>
+    <dl>
+        <dt>Turing RK1 disk image</dt>
+        <dd><a href="{{ "metal-turing_rk1-arm64.raw.xz" | $.ImageBaseURL.JoinPath }}">{{
+                "metal-turing_rk1-arm64.raw.xz" | $.ImageBaseURL.JoinPath }}</a></dd>
+    </dl>
     <h3>Metal</h3>
     <dl>
         {{ range $arch := .Architectures }}

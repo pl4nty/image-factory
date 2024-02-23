@@ -46,31 +46,14 @@ func (m *Manager) fetchTalosVersions() (any, error) {
 		versions = append(versions, version)
 	}
 
-	// find "current" maximum version
-	maxVersion := slices.MaxFunc(versions, semver.Version.Compare)
-
 	// allow non-prerelease versions, and allow pre-release for the "latest" release (maxVersion)
 	versions = xslices.Filter(versions, func(version semver.Version) bool {
 		if version.LT(m.options.MinVersion) {
 			return false // ignore versions below minimum
 		}
 
-		if len(version.Pre) > 0 {
-			if !(version.Major == maxVersion.Major && version.Minor == maxVersion.Minor) {
-				return false // ignore pre-releases for older versions
-			}
-
-			if len(version.Pre) != 2 {
-				return false
-			}
-
-			if !(version.Pre[0].VersionStr == "alpha" || version.Pre[0].VersionStr == "beta") {
-				return false
-			}
-
-			if !version.Pre[1].IsNumeric() {
-				return false
-			}
+		if len(version.Pre) > 0 && strings.Count(version.Pre[0].VersionStr, "-") > 1 {
+			return false // ignore hash pre-releases
 		}
 
 		return true
