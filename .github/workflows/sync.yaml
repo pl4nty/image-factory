@@ -1,0 +1,39 @@
+name: sync
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+"on":
+  schedule:
+    - cron: 0 0 * * *
+  workflow_dispatch:
+jobs:
+  default:
+    permissions:
+      contents: read
+    runs-on:
+      - ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - branch: main
+            board: ""
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}${{ matrix.board }}
+          fetch-depth: 10 # default of 1 will only retain one fork commit
+          # workflow permission is required to commit changes to workflow yaml files
+          # it's not supported for github.token yet
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+      - uses: octokit/request-action@v2.1.9
+        id: upstream
+        with:
+          token: ${{ github.token }}
+          route: GET /repos/${{ github.repository }}
+      - run: |
+          git remote add upstream "${{ fromJson(steps.upstream.outputs.data).parent.clone_url }}"
+          git pull upstream "${{ matrix.branch }}" --no-tags --rebase --strategy-option ours
+          git push --force
+        env:
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
