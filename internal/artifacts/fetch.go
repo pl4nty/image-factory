@@ -19,7 +19,6 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/empty"
 	"github.com/google/go-containerregistry/pkg/v1/layout"
-	"github.com/sigstore/cosign/v2/pkg/cosign"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
@@ -109,16 +108,6 @@ func (m *Manager) fetchImageByDigest(digestRef name.Digest, architecture Arch, i
 	defer cancel()
 
 	logger := m.logger.With(zap.Stringer("image", digestRef))
-
-	// verify the image signature, we only accept properly signed images
-	logger.Debug("verifying image signature")
-
-	_, bundleVerified, err := cosign.VerifyImageSignatures(ctx, digestRef, &m.options.ImageVerifyOptions)
-	if err != nil {
-		return fmt.Errorf("failed to verify image signature for %s: %w", digestRef.Name(), err)
-	}
-
-	logger.Info("image signature verified", zap.Bool("bundle_verified", bundleVerified))
 
 	// pull down the image and extract the necessary parts
 	logger.Info("pulling the image")
